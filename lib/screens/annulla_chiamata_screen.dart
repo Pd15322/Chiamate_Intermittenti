@@ -431,17 +431,27 @@ class _AnnullaChiamataScreenState extends State<AnnullaChiamataScreen> {
           );
 
           if (salvare == true) {
-            for (var chiamata in chiamateAnnullate) {
-              await DatabaseHelper.instance.insertChiamata(chiamata);
-            }
-            await ReviewService().incrementConsecutiveSuccessCalls();
+            try {
+              for (var chiamata in chiamateAnnullate) {
+                await DatabaseHelper.instance.insertChiamata(chiamata);
+              }
+              await ReviewService().incrementConsecutiveSuccessCalls();
 
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Annullamento salvato nello storico'),
-                backgroundColor: Colors.green,
-              ),
-            );
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('Annullamento salvato nello storico'),
+                  backgroundColor: Colors.green,
+                ),
+              );
+            } catch (e) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('ERRORE nel salvare nello storico: $e'),
+                  backgroundColor: Colors.red,
+                  duration: const Duration(seconds: 10),
+                ),
+              );
+            }
           }
 
           Navigator.pop(context);
@@ -487,11 +497,26 @@ class _AnnullaChiamataScreenState extends State<AnnullaChiamataScreen> {
 
           if (emailInviata) {
             // Salva tutti gli annullamenti nel database
-            for (var chiamata in chiamateAnnullate) {
-              await DatabaseHelper.instance.insertChiamata(chiamata);
-            }
+            try {
+              for (var chiamata in chiamateAnnullate) {
+                await DatabaseHelper.instance.insertChiamata(chiamata);
+              }
 
-            await ReviewService().incrementConsecutiveSuccessCalls();
+              await ReviewService().incrementConsecutiveSuccessCalls();
+            } catch (e) {
+              setState(() => isSending = false);
+
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('Email inviata ma ERRORE nel salvare nello storico: $e'),
+                  backgroundColor: Colors.orange,
+                  duration: const Duration(seconds: 10),
+                ),
+              );
+
+              Navigator.pop(context);
+              return;
+            }
 
             setState(() => isSending = false);
 
