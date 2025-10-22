@@ -23,7 +23,7 @@ class DatabaseHelper {
 
     return await openDatabase(
       path,
-      version: 5,
+      version: 6,
       onCreate: _createDB,
       onUpgrade: _onUpgrade,
     );
@@ -71,6 +71,7 @@ class DatabaseHelper {
       dipendenteId $intType,
       nomeDipendente $textType,
       codiceFiscaleDipendente $textType,
+      nomeAzienda TEXT,
       codiceUnilav $textType,
       dataInizio $textType,
       dataFine $textType,
@@ -105,6 +106,15 @@ class DatabaseHelper {
     }
     if (oldVersion < 5) {
       await db.execute('ALTER TABLE chiamate ADD COLUMN nomeAzienda TEXT');
+    }
+    if (oldVersion < 6) {
+      // Migrazione sicura: prova ad aggiungere nomeAzienda se non esiste già
+      try {
+        await db.execute('ALTER TABLE chiamate ADD COLUMN nomeAzienda TEXT');
+      } catch (e) {
+        // Colonna già esistente, ignora l'errore
+        print('Colonna nomeAzienda già presente o errore durante aggiunta: $e');
+      }
     }
   }
 
