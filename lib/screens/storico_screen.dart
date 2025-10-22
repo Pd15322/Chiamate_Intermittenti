@@ -836,6 +836,11 @@ class _StoricoScreenState extends State<StoricoScreen> {
                         subtitle: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
+                            if (chiamata.nomeAzienda != null && chiamata.nomeAzienda!.isNotEmpty)
+                              Text(
+                                'Azienda: ${chiamata.nomeAzienda}',
+                                style: const TextStyle(fontWeight: FontWeight.w600, color: Colors.orange),
+                              ),
                             Text('Unilav: ${chiamata.codiceUnilav}'),
                             Text(
                               'Periodo: ${DateFormat('dd/MM/yyyy').format(chiamata.dataInizio)} - '
